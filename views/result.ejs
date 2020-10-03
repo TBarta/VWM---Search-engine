@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <h1>Search results for "<%=query%>"</h1>
+  <ol>
+    <% results.forEach(function(result) { %>
+      <li><a target="_blank" href=<%= result.ref %>><%= result.ref %></a> has a value of <strong><%= result.score.toFixed(3) %></strong></li>
+    <% }); %>
+  </ol>
+</body>
+</html>

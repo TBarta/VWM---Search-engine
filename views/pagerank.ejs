@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script type="text/javascript">
+        const search_test = async () => {
+            try {
+                hide('error');
+                //Gets the value from input
+                const search = document.getElementById('search');
+                const searchText = search.value;
+
+                //Show loading element and hide container
+                show('loader');
+                hide('container');
+                //Gets searched data
+                const response = await fetch(`http://localhost:3000/search_test/${searchText}`, {
+                    method: 'GET'
+                });
+                //Gets searched data
+                const data = await response.json();
+
+
+                //Maps data to Array of HTML elements
+                const els = data.map(el => {
+                    return `<li><a target="_blank" href="${el.ref}">${el.ref}</a> has a value of <strong>${el.score.toFixed(3)}</strong></li>`
+                });
+
+                // Makes HTML from array
+                const html = els.join('');
+                // Hides loading
+                hide('loader');
+                // handles title replacement after search
+                handleTitle(searchText);
+
+                document.getElementById('nodelist').style.display = 'none';
+
+                // insert stringified html to DOM
+                const newOl = document.getElementById('nodelist-search');
+                newOl.innerHTML = els;
+                newOl.style.display = 'block';
+                show('container');
+
+                show('back-button');
+
+            } catch (error) {
+                show('container');
+                show('back-button');
+                show('error');
+                hide('loader');
+                console.log(error);
+            }
+
+        }
+
+        const show = (id) => {
+            document.getElementById(id).style.display = 'block';
+        }
+
+        const hide = (id) => {
+            document.getElementById(id).style.display = 'none';
+        }
+
+        const handleTitle = (searchVal) => {
+            document.getElementById('title-pagerank').style.display = 'none';
+            document.getElementById('title-search').innerText = `Search results for ${searchVal}`;
+            document.getElementById('title-search').style.display = 'block';
+        }
+
+        const goBack = () => {
+            hide('nodelist-search');
+            show('nodelist');
+            show('title-pagerank');
+            hide('title-search');
+            hide('back-button');
+            hide('error');
+
+            document.getElementById('nodelist-search').innerHTML = '';
+        }
+    </script>
+    <title>Document</title>
+</head>
+
+<body>
+    <h1 id="title-pagerank">Pagerank for house <%= house %></h1>
+    <h1 id="title-search"></h1>
+    <div id="loader" style="display: none;">Loading...</div>
+    <div id="error" style="color:red; display: none;">Nastala chyba při hledání..</div>
+    <div id="container">
+        <ol id="nodelist">
+            <% nodes.forEach(function([key, value]) { %>
+            <li><a target="_blank" href=<%= key %>><%= key %></a> has a value of <strong><%= value %></strong></li>
+            <% }); %>
+        </ol>
+
+        <ol id="nodelist-search" style="display: none;"></ol>
+        <button onclick="goBack()" id="back-button" style="display: none; font-size: 30px;">⌫</button>
+        <label for="search">Search: </label>
+        <input id="search" name="search" type="text">
+        <button id="btn" onclick="search_test()">SUBMIT</button>
+    </div>
+
+</body>
+
+</html>
